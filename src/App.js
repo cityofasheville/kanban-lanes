@@ -16,11 +16,11 @@ class Card extends React.Component {
       description: props.card.description,
       open: false
     }
-    this.doit = this.doit.bind(this);
+    this.toggleCardOpen = this.toggleCardOpen.bind(this);
   }
 
 // ▲: &#9650; and ▼: &#9660;
-  doit() {
+toggleCardOpen() {
     this.setState((state, props) => ({
       open: !state.open
     }));
@@ -29,12 +29,12 @@ class Card extends React.Component {
   render() {
     let card = (
       <div class="card">
-        <button class="button" onClick = {this.doit}><p><b>{this.state.name}</b> &nbsp;&#9660; </p></button>
+        <button class="button" onClick = {this.toggleCardOpen}><p><b>{this.state.name}</b> &nbsp;&#9660; </p></button>
       </div>
     );
     if (this.state.open) card = (
       <div class="card">
-        <button class="button" onClick = {this.doit}>
+        <button class="button" onClick = {this.toggleCardOpen}>
           <p><b>{this.state.name}&nbsp;&#9650; </b></p>
         </button>
         <p><em>{this.state.owner}</em></p>
@@ -127,6 +127,7 @@ class App extends React.Component{
     lane_presets.forEach(function(ln) {
       lanes[ln] = [];
     });
+
     fetch(url)
     .then(response => response.json())
     .then((jsonData) => {
@@ -157,8 +158,9 @@ class App extends React.Component{
       for (let lane in lanes) {
         data.push({name: lane, stacks: lanes[lane]})
       }
+
       data.sort(sortByName)
-      // Now set up the stacks
+
       data.forEach(function (lane) {
         let stacks = []
         for (let nm in lane.stacks) {
@@ -167,6 +169,7 @@ class App extends React.Component{
         stacks.sort(sortByName);
         lane.stacks = stacks;
       });
+
       this.setState({data});
     });
   }
