@@ -27,18 +27,29 @@ toggleCardOpen() {
   }
 
   render() {
+    let cardDetailClass = 'hide-me';
+    let asciiArrowClass = 'expand';
+    if (this.state.open) {
+      cardDetailClass = '';
+      asciiArrowClass = 'collapse';
+    }
+    // let card = (
+    //   <div class="card">
+    //     <button className="button" onClick = {this.toggleCardOpen}><p><b>{this.state.name}</b> &nbsp;&#9660; </p></button>
+    //   </div>
+    // );
+    // if (this.state.open) {
+
+    // }
     let card = (
-      <div class="card">
-        <button class="button" onClick = {this.toggleCardOpen}><p><b>{this.state.name}</b> &nbsp;&#9660; </p></button>
-      </div>
-    );
-    if (this.state.open) card = (
-      <div class="card">
-        <button class="button" onClick = {this.toggleCardOpen}>
-          <p><b>{this.state.name}&nbsp;&#9650; </b></p>
+      <div className="card">
+        <button className="button" onClick = {this.toggleCardOpen}>
+          <p><b>{this.state.name}</b> {this.state.open ? (<i class="expand-collapse fas fa-chevron-up fa-2x"></i>) : (<i class="expand-collapse fas fa-chevron-down fa-2x"></i>)}</p>
         </button>
-        <p><em>{this.state.owner}</em></p>
-        <p class="desc">{this.state.description}</p>
+        <div className={cardDetailClass}>
+          <p><em>{this.state.owner}</em></p>
+          <p className="desc">{this.state.description}</p>
+        </div>
       </div>
     )
     return card;
@@ -55,11 +66,11 @@ class Stack extends React.Component {
   }
 
   render() {
-    let cards = (this.state.cards.length === 0) ? <div> </div>: this.state.cards.map((card) => {
-      return <Card card={card}></Card>
+    let cards = (this.state.cards.length === 0) ? <div> </div>: this.state.cards.map((card, i) => {
+      return <Card card={card} key ={i}></Card>
     });
-    return <div class="stack-flex-item">
-      <p textAlign="left"><em><b><u>{this.state.name}</u></b></em></p>
+    return <div className="col px-0 border">
+      <p><em><b><u>{this.state.name}</u></b></em></p>
       {cards}
       </div>
   }
@@ -75,12 +86,14 @@ class Lane extends React.Component {
   }
   render() {
     return (
-      <div textAlign="left" width="100%" class="lane">
+      <div width="100%" className="lane">
         <b>{this.state.name}</b>
-        <div class="lane-flex-container">
-            {this.state.stacks.map((stack) => {
-              return <Stack name = {stack.name} cards = {stack.cards}></Stack>
+        <div className="container-fluid">
+          <div className="row">
+            {this.state.stacks.map((stack, i) => {
+              return <Stack name = {stack.name} cards = {stack.cards} key={i}></Stack>
             })}
+          </div>
         </div>
       </div>
     )
@@ -109,8 +122,8 @@ class App extends React.Component{
             {this.state.title}
           </p>
         </header>
-        {this.state.data.map((lane) => {
-            return <Lane name = {lane.name} stacks = {lane.stacks}/>
+        {this.state.data.map((lane, i) => {
+            return <Lane name = {lane.name} stacks = {lane.stacks} key={i} />
           })}
       </div>
     );

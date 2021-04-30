@@ -18,10 +18,12 @@
 .button {
   margin: 0;
   border: 1px;
-  border-color: grey;
+  border-color: purple;
   background-color: light-grey;
   display: block;
   width: 100%;
+  position: relative;
+  padding-right: 50px;
 }
 
 .card {
@@ -42,6 +44,7 @@
   text-align: center;
   border: 1px solid black;
   margin: 2px;
+  padding: 0;
 }
 .App-header {
   text-align: center;
@@ -59,3 +62,16 @@
   color: #61dafb;
 }
 
+.hide-me {
+  display: none;
+}
+
+.expand-collapse {
+  display: inline-block;
+  width: 40px;
+  margin: auto 0 auto 20px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
