@@ -19,32 +19,26 @@ class Card extends React.Component {
     this.toggleCardOpen = this.toggleCardOpen.bind(this);
   }
 
-// ▲: &#9650; and ▼: &#9660;
-toggleCardOpen() {
+  toggleCardOpen(e) {
+    e.preventDefault();
     this.setState((state, props) => ({
-      open: !state.open
-    }));
+        open: !state.open
+      })
+    );
   }
 
   render() {
-    let cardDetailClass = 'hide-me';
+    let cardDetailClass = 'm-3 hide-me';
     let asciiArrowClass = 'expand';
     if (this.state.open) {
-      cardDetailClass = '';
+      cardDetailClass = 'm-3';
       asciiArrowClass = 'collapse';
     }
-    // let card = (
-    //   <div class="card">
-    //     <button className="button" onClick = {this.toggleCardOpen}><p><b>{this.state.name}</b> &nbsp;&#9660; </p></button>
-    //   </div>
-    // );
-    // if (this.state.open) {
 
-    // }
     let card = (
-      <div className="card">
-        <button className="button" onClick = {this.toggleCardOpen}>
-          <p><b>{this.state.name}</b> {this.state.open ? (<i class="expand-collapse fas fa-chevron-up fa-2x"></i>) : (<i class="expand-collapse fas fa-chevron-down fa-2x"></i>)}</p>
+      <div className="card my-3">
+        <button className="card-header coa-bg-header" onClick = {this.toggleCardOpen}>
+          <h4 className=" lighter">{this.state.name}</h4> <span className="expand-collapse">{this.state.open ? (<i className="fas fa-folder-open"></i>) : (<i className="fas fa-folder"></i>)}</span>
         </button>
         <div className={cardDetailClass}>
           <p><em>{this.state.owner}</em></p>
@@ -69,10 +63,12 @@ class Stack extends React.Component {
     let cards = (this.state.cards.length === 0) ? <div> </div>: this.state.cards.map((card, i) => {
       return <Card card={card} key ={i}></Card>
     });
-    return <div className="col px-0 border">
-      <p><em><b><u>{this.state.name}</u></b></em></p>
-      {cards}
+    return (
+      <div className="col-md px-3 py-4 border">
+        <h3 className="pb-2 lighter coa-underline">{this.state.name}</h3>
+        {cards}
       </div>
+    )
   }
 }
 
@@ -86,8 +82,8 @@ class Lane extends React.Component {
   }
   render() {
     return (
-      <div width="100%" className="lane">
-        <b>{this.state.name}</b>
+      <div width="100%" className="lane mx-2 my-5">
+        <h2 className="p-3 mb-0 lighter">{this.state.name}</h2>
         <div className="container-fluid">
           <div className="row">
             {this.state.stacks.map((stack, i) => {
@@ -117,10 +113,11 @@ class App extends React.Component{
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <p>
+        <header className="navbar p-3 coa-bg-header">
+          <img src="/coa-logo.png" height="125" className="header-image align-top" alt="Logo for City of Asheville, North Carolina" />
+          <h1 className="navbar-text lighter">
             {this.state.title}
-          </p>
+          </h1>
         </header>
         {this.state.data.map((lane, i) => {
             return <Lane name = {lane.name} stacks = {lane.stacks} key={i} />
@@ -189,5 +186,3 @@ class App extends React.Component{
 }
 
 export default App;
-
-// 
