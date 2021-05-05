@@ -28,10 +28,10 @@ class Card extends React.Component {
   }
 
   render() {
-    let cardDetailClass = 'm-3 hide-me';
+    let cardDetailClass = 'm-3 text-break hide-me';
     let asciiArrowClass = 'expand';
     if (this.state.open) {
-      cardDetailClass = 'm-3';
+      cardDetailClass = 'm-3 text-break';
       asciiArrowClass = 'collapse';
     }
 
