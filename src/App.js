@@ -1,11 +1,21 @@
 import './App.css';
 import React from 'react';
 
-function sortByName(a, b) {
-  if (a.name < b.name) return -1;
-  else if (a.name > b.name) return 1;
-  else return 0
-}
+let sort_order = [];
+
+function sortByName (a, b) {
+  if (sort_order.length === 0) {
+    if (a.name < b.name) return -1;
+    else if (a.name > b.name) return 1;
+    else return 0;
+  }
+  let a_n = sort_order.indexOf(a.name);
+  let b_n = sort_order.indexOf(b.name);
+  a_n = a_n < 0 ? a_n + 100 : a_n;
+  b_n = b_n < 0 ? b_n + 100 : b_n;
+  return a_n - b_n;
+};
+
 
 class Card extends React.Component {
   constructor(props) {
@@ -130,7 +140,7 @@ class App extends React.Component{
     // ID and URL the Google Spreadsheet. Make sure it is published
     var spreadsheetID = "1HMyHNExKF8xo8S6gXkqx5sTo4Rz0ez8iY4mF2XzmvXs"
     var url = "https://spreadsheets.google.com/feeds/list/" + spreadsheetID + "/od6/public/values?alt=json";
-    const stack_presets = ["In Progress", "On Hold", "Ready"];
+    const stack_presets = ["Ready", "In Progress", "On Hold"];
     const lane_presets  = [];
     var data = [];
     var lanes = {};
@@ -143,7 +153,8 @@ class App extends React.Component{
     .then((jsonData) => {
       let arr = jsonData.feed.entry;
       arr.filter((itm) => {
-        return itm.gsx$parenttask.$t === "";
+        return (itm.gsx$parenttask.$t === "" &&
+                itm.gsx$completedat.$t === "");
       })
       .map((itm)=>{
         return {
@@ -169,6 +180,7 @@ class App extends React.Component{
         data.push({name: lane, stacks: lanes[lane]})
       }
 
+      sort_order = lane_presets;
       data.sort(sortByName)
 
       data.forEach(function (lane) {
@@ -176,6 +188,7 @@ class App extends React.Component{
         for (let nm in lane.stacks) {
           stacks.push({name: nm, cards: lane.stacks[nm]})
         }
+        sort_order = stack_presets;
         stacks.sort(sortByName);
         lane.stacks = stacks;
       });
