@@ -169,7 +169,7 @@ class App extends React.Component{
     lane_presets.forEach(function(ln) {
       lanes[ln] = [];
     });
-    console.log('Running prepData with ' + laneDimension);
+
     // Sort raw data into lanes by lane dimension
     rawData.forEach(function (itm) {
       if (!(itm[laneDimension] in lanes)) {
@@ -216,7 +216,6 @@ class App extends React.Component{
                 itm.gsx$completedat.$t === "");
       })
       .map((itm)=>{
-        console.log(itm);
         return {
           name: itm.gsx$name.$t,
           category: itm.gsx$sectioncolumn.$t,
@@ -235,11 +234,6 @@ class App extends React.Component{
   render() {
     let primary = "btn btn-primary";
     let secondary = "btn btn-secondary";
-    let btnClasses = [
-      this.state.laneDimension === 'category' ? primary : secondary,
-      this.state.laneDimension === 'priority' ? primary : secondary,
-      this.state.laneDimension === 'owner' ? primary : secondary
-    ]
     return (
       <div className="App">
         <header className="navbar p-3 coa-bg-header">
