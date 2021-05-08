@@ -28,6 +28,16 @@ function sortByName (a, b) {
   return a_n - b_n;
 };
 
+var prioritySortOrder = ["High", "Medium", "Low", "None"];
+
+function sortByPriority (a, b) {
+  let a_n = prioritySortOrder.indexOf(a.priority);
+  let b_n = prioritySortOrder.indexOf(b.priority);
+  a_n = a_n < 0 ? a_n + 100 : a_n;
+  b_n = b_n < 0 ? b_n + 100 : b_n;
+  return a_n - b_n;
+};
+
 
 class Card extends React.Component {
   constructor(props) {
@@ -64,8 +74,14 @@ class Card extends React.Component {
           <h4 className=" lighter">{this.state.name}</h4> <span className="expand-collapse">{this.state.open ? (<i className="fas fa-folder-open"></i>) : (<i className="fas fa-folder"></i>)}</span>
         </button>
         <div className={cardDetailClass}>
-          <p><em>{this.state.owner}</em></p>
-          <p>Priority: {this.state.priority}</p>
+          <div style={{marginBottom: "10px"}}>
+          <span>
+            <b>Owner:</b> {this.state.owner}
+            </span>
+            <span style={{float: "right", marginBottom: "5px"}}>
+              <b>Priority:</b> {this.state.priority}
+            </span>
+            </div>
           <p className="desc">{this.state.description}</p>
         </div>
       </div>
@@ -176,7 +192,7 @@ class App extends React.Component{
     data.forEach(function (lane) {
       let stacks = []
       for (let nm in lane.stacks) {
-        stacks.push({name: nm, cards: lane.stacks[nm]})
+        stacks.push({name: nm, cards: lane.stacks[nm].sort(sortByPriority)})
       }
       sort_order = stack_presets;
       stacks.sort(sortByName);
