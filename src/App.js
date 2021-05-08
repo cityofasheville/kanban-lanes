@@ -3,6 +3,18 @@ import React from 'react';
 
 let sort_order = [];
 
+var laneDimensions = {
+  category: {
+    presets: []
+  },
+  priority: {
+    presets: ["High", "Medium", "Low", "None"]
+  },
+  owner: {
+    presets: []
+  }
+};
+
 function sortByName (a, b) {
   if (sort_order.length === 0) {
     if (a.name < b.name) return -1;
@@ -24,6 +36,7 @@ class Card extends React.Component {
       name: props.card.name,
       owner: props.card.owner,
       description: props.card.description,
+      priority: props.card.priority,
       open: false
     }
     this.toggleCardOpen = this.toggleCardOpen.bind(this);
@@ -52,6 +65,7 @@ class Card extends React.Component {
         </button>
         <div className={cardDetailClass}>
           <p><em>{this.state.owner}</em></p>
+          <p>Priority: {this.state.priority}</p>
           <p className="desc">{this.state.description}</p>
         </div>
       </div>
@@ -97,7 +111,7 @@ class Lane extends React.Component {
         <div className="container-fluid">
           <div className="row">
             {this.state.stacks.map((stack, i) => {
-              return <Stack name = {stack.name} cards = {stack.cards} key={i}></Stack>
+              return <Stack name = {stack.name} cards = {stack.cards} key={stack.name + i}></Stack>
             })}
           </div>
         </div>
@@ -112,15 +126,104 @@ class App extends React.Component{
     super(props);
     this.state = { 
       title: "Office of Data & Performance Projects",
+      laneDimension: 'category',
+      rawData: [],
       data: []
     }
+    this.setViewBy = this.setViewBy.bind(this);
   }
 
   componentDidMount() {
     this.getData();
   }
 
+  setViewBy(e) {
+    //e.preventDefault();
+    this.setState({
+      laneDimension: e.target.value,
+      data: this.prepData(this.state.rawData, e.target.value)
+    });
+  }
+
+  prepData(rawData, laneDimension) {
+    const lane_presets  = laneDimensions[laneDimension].presets;
+    const stack_presets = ["Ready", "In Progress", "On Hold"];
+    let data = [];
+    let lanes = {};
+    lane_presets.forEach(function(ln) {
+      lanes[ln] = [];
+    });
+    console.log('Running prepData with ' + laneDimension);
+    // Sort raw data into lanes by lane dimension
+    rawData.forEach(function (itm) {
+      if (!(itm[laneDimension] in lanes)) {
+        lanes[itm[laneDimension]] = {};
+        stack_presets.forEach(function(stk) {
+          lanes[itm[laneDimension]][stk] = [];
+        });
+      }
+      if (!(itm.status in lanes[itm[laneDimension]])) lanes[itm[laneDimension]][itm.status] = [];
+      lanes[itm[laneDimension]][itm.status].push(itm);
+    })
+
+    for (let lane in lanes) {
+      data.push({name: lane, stacks: lanes[lane]})
+    }
+
+    sort_order = lane_presets;
+    data.sort(sortByName)
+
+    data.forEach(function (lane) {
+      let stacks = []
+      for (let nm in lane.stacks) {
+        stacks.push({name: nm, cards: lane.stacks[nm]})
+      }
+      sort_order = stack_presets;
+      stacks.sort(sortByName);
+      lane.stacks = stacks;
+    });
+    return data;
+  }
+
+  getData() {
+    // ID and URL the Google Spreadsheet. Make sure it is published
+    var spreadsheetID = "1HMyHNExKF8xo8S6gXkqx5sTo4Rz0ez8iY4mF2XzmvXs"
+    var url = "https://spreadsheets.google.com/feeds/list/" + spreadsheetID + "/od6/public/values?alt=json";
+
+    let rawData = null;
+    fetch(url)
+    .then(response => response.json())
+    .then((jsonData) => {
+      rawData = jsonData.feed.entry
+      .filter((itm) => {
+        return (itm.gsx$parenttask.$t === "" &&
+                itm.gsx$completedat.$t === "");
+      })
+      .map((itm)=>{
+        console.log(itm);
+        return {
+          name: itm.gsx$name.$t,
+          category: itm.gsx$sectioncolumn.$t,
+          priority: (itm.gsx$priority.$t === "") ? "None" : itm.gsx$priority.$t,
+          owner: (itm.gsx$assignee.$t === "") ? "Unknown" : itm.gsx$assignee.$t,
+          status: itm.gsx$status.$t,
+          description: itm.gsx$notes.$t
+        };
+      });
+      let data = this.prepData(rawData, this.state.laneDimension);
+
+      this.setState({data, rawData});
+    });
+  }
+
   render() {
+    let primary = "btn btn-primary";
+    let secondary = "btn btn-secondary";
+    let btnClasses = [
+      this.state.laneDimension === 'category' ? primary : secondary,
+      this.state.laneDimension === 'priority' ? primary : secondary,
+      this.state.laneDimension === 'owner' ? primary : secondary
+    ]
     return (
       <div className="App">
         <header className="navbar p-3 coa-bg-header">
@@ -129,72 +232,54 @@ class App extends React.Component{
             {this.state.title}
           </h1>
         </header>
+        <form className="view-by">
+          <span style={{marginRight: "1em"}}><b>View By</b></span>
+            <div className="form-check form-check-inline">
+              <label className="form-check-label">
+                <input
+                  type="radio"
+                  name="react-tips"
+                  value="category"
+                  checked={this.state.laneDimension === 'category'}
+                  onChange={this.setViewBy}
+                  className="form-check-input"
+                />
+                <b>Category</b>
+              </label>
+            </div>
+            <div className="form-check form-check-inline">
+              <label className="form-check-label">
+              <input
+                type="radio"
+                name="react-tips"
+                value="priority"
+                checked={this.state.laneDimension === 'priority'}
+                onChange={this.setViewBy}
+                className="form-check-input"
+              />
+              <b>Priority</b>
+            </label>
+            </div>
+            <div className="form-check form-check-inline">
+            <label className="form-check-label">
+              <input
+                type="radio"
+                name="react-tips"
+                value="owner"
+                checked={this.state.laneDimension === 'owner'}
+                onChange={this.setViewBy}
+                className="form-check-input"
+              />
+              <b>Owner</b>
+            </label>
+            </div>
+        </form>
+
         {this.state.data.map((lane, i) => {
-            return <Lane name = {lane.name} stacks = {lane.stacks} key={i} />
+            return <Lane name = {lane.name} stacks = {lane.stacks} key={lane.name + i} />
           })}
       </div>
     );
-  }
-
-  getData() {
-    // ID and URL the Google Spreadsheet. Make sure it is published
-    var spreadsheetID = "1HMyHNExKF8xo8S6gXkqx5sTo4Rz0ez8iY4mF2XzmvXs"
-    var url = "https://spreadsheets.google.com/feeds/list/" + spreadsheetID + "/od6/public/values?alt=json";
-    const stack_presets = ["Ready", "In Progress", "On Hold"];
-    const lane_presets  = [];
-    var data = [];
-    var lanes = {};
-    lane_presets.forEach(function(ln) {
-      lanes[ln] = [];
-    });
-
-    fetch(url)
-    .then(response => response.json())
-    .then((jsonData) => {
-      let arr = jsonData.feed.entry;
-      arr.filter((itm) => {
-        return (itm.gsx$parenttask.$t === "" &&
-                itm.gsx$completedat.$t === "");
-      })
-      .map((itm)=>{
-        return {
-          name: itm.gsx$name.$t,
-          category: itm.gsx$sectioncolumn.$t, 
-          owner: itm.gsx$assignee.$t,
-          status: itm.gsx$status.$t,
-          description: itm.gsx$notes.$t
-        };
-      })
-      .forEach(function (itm) {
-        if (!(itm.category in lanes)) {
-          lanes[itm.category] = {};
-          stack_presets.forEach(function(stk) {
-            lanes[itm.category][stk] = [];
-          });
-        }
-        if (!(itm.status in lanes[itm.category])) lanes[itm.category][itm.status] = [];
-        lanes[itm.category][itm.status].push(itm);
-      })
-
-      for (let lane in lanes) {
-        data.push({name: lane, stacks: lanes[lane]})
-      }
-
-      sort_order = lane_presets;
-      data.sort(sortByName)
-
-      data.forEach(function (lane) {
-        let stacks = []
-        for (let nm in lane.stacks) {
-          stacks.push({name: nm, cards: lane.stacks[nm]})
-        }
-        sort_order = stack_presets;
-        stacks.sort(sortByName);
-        lane.stacks = stacks;
-      });
-
-      this.setState({data});
-    });
   }
 }
 
