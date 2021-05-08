@@ -75,13 +75,13 @@ class Card extends React.Component {
         </button>
         <div className={cardDetailClass}>
           <div style={{marginBottom: "10px"}}>
-          <span>
-            <b>Owner:</b> {this.state.owner}
+            <span>
+              Owner: {this.state.owner}
+            </span><br/>
+            <span>
+              Priority: {this.state.priority}
             </span>
-            <span style={{float: "right", marginBottom: "5px"}}>
-              <b>Priority:</b> {this.state.priority}
-            </span>
-            </div>
+          </div>
           <p className="desc">{this.state.description}</p>
         </div>
       </div>
