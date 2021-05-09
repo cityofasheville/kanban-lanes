@@ -5,7 +5,7 @@ let sort_order = [];
 
 var laneDimensions = {
   category: {
-    presets: []
+    presets: ["Projects & Initiatives", "External Engagement & Communication", "Internal Communication & Training", "Data Management & Governance"]
   },
   priority: {
     presets: ["High", "Medium", "Low", "None"]
