@@ -11,7 +11,7 @@ var laneDimensions = {
     presets: ["High", "Medium", "Low", "None"]
   },
   owner: {
-    presets: []
+    presets: ["Natalie Bailey", "Cameron Henshaw", "Eric Jackson"]
   }
 };
 
