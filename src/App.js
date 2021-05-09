@@ -8,7 +8,7 @@ var laneDimensions = {
     presets: ["Projects & Initiatives", "External Engagement & Communication", "Internal Communication & Training", "Data Management & Governance"]
   },
   priority: {
-    presets: ["High", "Medium", "Low", "None"]
+    presets: ["High", "Medium", "Low"]
   },
   owner: {
     presets: ["Natalie Bailey", "Cameron Henshaw", "Eric Jackson"]
@@ -67,7 +67,7 @@ class Card extends React.Component {
       cardDetailClass = 'm-3 text-break';
       asciiArrowClass = 'collapse';
     }
-
+    if (this.state.name === 'Dummy') return (<div>&nbsp;</div>); // Empty column placeholder
     let card = (
       <div className="card my-3">
         <button className="card-header coa-bg-header" onClick = {this.toggleCardOpen}>
@@ -161,13 +161,24 @@ class App extends React.Component{
     });
   }
 
+  createPlaceholder(stackName) {
+    return {
+      name: "Dummy", category: "", priority: "Low", owner: "Unknown",
+      status: stackName, description: ""
+    };
+  }
+
   prepData(rawData, laneDimension) {
     const lane_presets  = laneDimensions[laneDimension].presets;
     const stack_presets = ["Ready", "In Progress", "On Hold"];
     let data = [];
     let lanes = {};
+    let createPlaceholder = this.createPlaceholder;
     lane_presets.forEach(function(ln) {
       lanes[ln] = [];
+      stack_presets.forEach(function(stk) {
+        lanes[ln][stk] = [createPlaceholder(stk)];
+      });
     });
 
     // Sort raw data into lanes by lane dimension
@@ -175,7 +186,7 @@ class App extends React.Component{
       if (!(itm[laneDimension] in lanes)) {
         lanes[itm[laneDimension]] = {};
         stack_presets.forEach(function(stk) {
-          lanes[itm[laneDimension]][stk] = [];
+          lanes[itm[laneDimension]][stk] = [createPlaceholder(stk)];
         });
       }
       if (!(itm.status in lanes[itm[laneDimension]])) lanes[itm[laneDimension]][itm.status] = [];
@@ -219,7 +230,7 @@ class App extends React.Component{
         return {
           name: itm.gsx$name.$t,
           category: itm.gsx$sectioncolumn.$t,
-          priority: (itm.gsx$priority.$t === "") ? "None" : itm.gsx$priority.$t,
+          priority: (itm.gsx$priority.$t === "") ? "Low" : itm.gsx$priority.$t,
           owner: (itm.gsx$assignee.$t === "") ? "Unknown" : itm.gsx$assignee.$t,
           status: itm.gsx$status.$t,
           description: itm.gsx$notes.$t
@@ -232,8 +243,6 @@ class App extends React.Component{
   }
 
   render() {
-    let primary = "btn btn-primary";
-    let secondary = "btn btn-secondary";
     return (
       <div className="App">
         <header className="navbar p-3 coa-bg-header">
