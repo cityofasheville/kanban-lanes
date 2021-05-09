@@ -161,23 +161,15 @@ class App extends React.Component{
     });
   }
 
-  createPlaceholder(stackName) {
-    return {
-      name: "Dummy", category: "", priority: "Low", owner: "Unknown",
-      status: stackName, description: ""
-    };
-  }
-
   prepData(rawData, laneDimension) {
     const lane_presets  = laneDimensions[laneDimension].presets;
     const stack_presets = ["Ready", "In Progress", "On Hold"];
     let data = [];
     let lanes = {};
-    let createPlaceholder = this.createPlaceholder;
     lane_presets.forEach(function(ln) {
       lanes[ln] = [];
-      stack_presets.forEach(function(stk) {
-        lanes[ln][stk] = [createPlaceholder(stk)];
+      stack_presets.forEach(function(stk) { // Set up empty stacks
+        lanes[ln][stk] = [];
       });
     });
 
@@ -185,8 +177,8 @@ class App extends React.Component{
     rawData.forEach(function (itm) {
       if (!(itm[laneDimension] in lanes)) {
         lanes[itm[laneDimension]] = {};
-        stack_presets.forEach(function(stk) {
-          lanes[itm[laneDimension]][stk] = [createPlaceholder(stk)];
+        stack_presets.forEach(function(stk) { // Set up empty stacks
+          lanes[itm[laneDimension]][stk] = [];
         });
       }
       if (!(itm.status in lanes[itm[laneDimension]])) lanes[itm[laneDimension]][itm.status] = [];
@@ -203,7 +195,14 @@ class App extends React.Component{
     data.forEach(function (lane) {
       let stacks = []
       for (let nm in lane.stacks) {
-        stacks.push({name: nm, cards: lane.stacks[nm].sort(sortByPriority)})
+        let cards = lane.stacks[nm].sort(sortByPriority);
+        if (cards.length === 0) { // Add a dummy to preserve stack alignment
+          cards = [{
+            name: "Dummy", category: "", priority: "None", owner: "Unknown",
+            status: nm, description: ""
+          }];
+        }
+        stacks.push({name: nm, cards: cards});
       }
       sort_order = stack_presets;
       stacks.sort(sortByName);
@@ -230,7 +229,7 @@ class App extends React.Component{
         return {
           name: itm.gsx$name.$t,
           category: itm.gsx$sectioncolumn.$t,
-          priority: (itm.gsx$priority.$t === "") ? "Low" : itm.gsx$priority.$t,
+          priority: (itm.gsx$priority.$t === "") ? "None" : itm.gsx$priority.$t,
           owner: (itm.gsx$assignee.$t === "") ? "Unknown" : itm.gsx$assignee.$t,
           status: itm.gsx$status.$t,
           description: itm.gsx$notes.$t
