@@ -8,9 +8,9 @@ var laneDimensions = {
     presets: ["Projects & Initiatives", "External Engagement & Communication", "Internal Communication & Training", "Data Management & Governance"]
   },
   priority: {
-    presets: ["High", "Medium", "Low"]
+    presets: ["High", "Medium", "Low", "Ongoing"]
   },
-  owner: {
+  lead: {
     presets: ["Natalie Bailey", "Cameron Henshaw", "Eric Jackson"]
   }
 };
@@ -44,7 +44,7 @@ class Card extends React.Component {
     super(props)
     this.state = {
       name: props.card.name,
-      owner: props.card.owner,
+      lead: props.card.lead,
       description: props.card.description,
       priority: props.card.priority,
       open: false
@@ -76,7 +76,7 @@ class Card extends React.Component {
         <div className={cardDetailClass}>
           <div style={{marginBottom: "10px"}}>
             <span>
-              Owner: {this.state.owner}
+              Lead: {this.state.lead}
             </span><br/>
             <span>
               Priority: {this.state.priority}
@@ -198,7 +198,7 @@ class App extends React.Component{
         let cards = lane.stacks[nm].sort(sortByPriority);
         if (cards.length === 0) { // Add a dummy to preserve stack alignment
           cards = [{
-            name: "Dummy", category: "", priority: "None", owner: "Unknown",
+            name: "Dummy", category: "", priority: "None", lead: "Unknown",
             status: nm, description: ""
           }];
         }
@@ -229,8 +229,8 @@ class App extends React.Component{
         return {
           name: itm.gsx$name.$t,
           category: itm.gsx$sectioncolumn.$t,
-          priority: (itm.gsx$priority.$t === "") ? "None" : itm.gsx$priority.$t,
-          owner: (itm.gsx$assignee.$t === "") ? "Unknown" : itm.gsx$assignee.$t,
+          priority: (itm.gsx$importance.$t === "") ? "None" : itm.gsx$importance.$t,
+          lead: (itm.gsx$assignee.$t === "") ? "Unknown" : itm.gsx$assignee.$t,
           status: itm.gsx$status.$t,
           description: itm.gsx$notes.$t
         };
@@ -283,12 +283,12 @@ class App extends React.Component{
               <input
                 type="radio"
                 name="react-tips"
-                value="owner"
-                checked={this.state.laneDimension === 'owner'}
+                value="lead"
+                checked={this.state.laneDimension === 'lead'}
                 onChange={this.setViewBy}
                 className="form-check-input"
               />
-              <b>Owner</b>
+              <b>Lead</b>
             </label>
             </div>
         </form>
