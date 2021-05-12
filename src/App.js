@@ -142,6 +142,7 @@ class App extends React.Component{
     super(props);
     this.state = { 
       title: "Office of Data & Performance Projects",
+      showHeader: true,
       laneDimension: 'category',
       rawData: [],
       data: []
@@ -150,6 +151,9 @@ class App extends React.Component{
   }
 
   componentDidMount() {
+    let showHeader = true;
+    if (window.location.search.includes('noheader=true')) showHeader = false;
+    this.setState({ showHeader: false });
     this.getData();
   }
 
@@ -242,14 +246,17 @@ class App extends React.Component{
   }
 
   render() {
+    const header = this.state.showHeader?(
+      <header className="navbar p-3 coa-bg-header">
+      <img src="/coa-logo.png" height="125" className="header-image align-top" alt="Logo for City of Asheville, North Carolina" />
+      <h1 className="navbar-text lighter">
+        {this.state.title}
+      </h1>
+    </header>
+    ) : ' ';
     return (
       <div className="App">
-        <header className="navbar p-3 coa-bg-header">
-          <img src="/coa-logo.png" height="125" className="header-image align-top" alt="Logo for City of Asheville, North Carolina" />
-          <h1 className="navbar-text lighter">
-            {this.state.title}
-          </h1>
-        </header>
+        {header}
         <form className="view-by">
           <span style={{marginRight: "1em"}}><b>View By</b></span>
             <div className="form-check form-check-inline">
