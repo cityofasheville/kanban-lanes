@@ -231,7 +231,6 @@ class App extends React.Component{
       })
       .map((itm)=>{
         let status = itm.gsx$status.$t;
-        if (status === 'Closeout') status = 'In Progress';
         if (status === 'On Hold') status = 'Ready';
         return {
           name: itm.gsx$name.$t,
