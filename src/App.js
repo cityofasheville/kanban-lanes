@@ -167,7 +167,7 @@ class App extends React.Component{
 
   prepData(rawData, laneDimension) {
     const lane_presets  = laneDimensions[laneDimension].presets;
-    const stack_presets = ["Ready", "In Progress", "On Hold"];
+    const stack_presets = ["Ready", "In Progress", "On Hold", "Closeout"];
     let data = [];
     let lanes = {};
     lane_presets.forEach(function(ln) {
@@ -232,6 +232,7 @@ class App extends React.Component{
       .map((itm)=>{
         let status = itm.gsx$status.$t;
         if (status === 'Closeout') status = 'In Progress';
+        if (status === 'On Hold') status = 'Ready';
         return {
           name: itm.gsx$name.$t,
           category: itm.gsx$sectioncolumn.$t,
