@@ -167,7 +167,7 @@ class App extends React.Component{
 
   prepData(rawData, laneDimension) {
     const lane_presets  = laneDimensions[laneDimension].presets;
-    const stack_presets = ["Ready", "In Progress", "On Hold", "Closeout"];
+    const stack_presets = ["Ready", "In Progress", "Closeout"];
     let data = [];
     let lanes = {};
     lane_presets.forEach(function(ln) {
