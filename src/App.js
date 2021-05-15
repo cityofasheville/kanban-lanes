@@ -230,12 +230,14 @@ class App extends React.Component{
                 itm.gsx$completedat.$t === "");
       })
       .map((itm)=>{
+        let status = itm.gsx$status.$t;
+        if (status === 'Closeout') status = 'In Progress';
         return {
           name: itm.gsx$name.$t,
           category: itm.gsx$sectioncolumn.$t,
           priority: (itm.gsx$importance.$t === "") ? "None" : itm.gsx$importance.$t,
           lead: (itm.gsx$assignee.$t === "") ? "Unknown" : itm.gsx$assignee.$t,
-          status: itm.gsx$status.$t,
+          status: status,
           description: itm.gsx$notes.$t
         };
       });
