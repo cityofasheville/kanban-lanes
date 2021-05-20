@@ -143,6 +143,7 @@ class App extends React.Component{
     this.state = { 
       title: "Office of Data & Performance Projects",
       showHeader: true,
+      internalMode: false,
       laneDimension: 'category',
       rawData: [],
       data: []
@@ -152,8 +153,10 @@ class App extends React.Component{
 
   componentDidMount() {
     let showHeader = true;
+    let internalMode = false;
     if (window.location.search.includes('noheader=true')) showHeader = false;
-    this.setState({ showHeader: false });
+    if (window.location.search.includes('internal=true')) internalMode = true;
+    this.setState({ showHeader, internalMode });
     this.getData();
   }
 
@@ -167,7 +170,9 @@ class App extends React.Component{
 
   prepData(rawData, laneDimension) {
     const lane_presets  = laneDimensions[laneDimension].presets;
-    const stack_presets = ["Ready", "In Progress", "Closeout"];
+    const internalStackPresets = ['Ready', 'In Progress', 'Parking Lot'];
+    const externalStackPresets = ["Ready", "In Progress", "Recently Closed"];
+    const stack_presets = this.state.internalMode ? internalStackPresets : externalStackPresets;
     let data = [];
     let lanes = {};
     lane_presets.forEach(function(ln) {
@@ -226,12 +231,24 @@ class App extends React.Component{
     .then((jsonData) => {
       rawData = jsonData.feed.entry
       .filter((itm) => {
-        return (itm.gsx$parenttask.$t === "" &&
-                itm.gsx$completedat.$t === "");
+        if (this.state.internalMode)
+          return (itm.gsx$parenttask.$t === "" &&
+                  itm.gsx$completedat.$t === "");
+        else {
+          if (itm.gsx$status.$t === 'Parking Lot') return false;
+          if (itm.gsx$parenttask.$t === "") {
+            if (itm.gsx$completedat.$t === "") return true;
+            let closeDate = Date.parse(itm.gsx$completedat.$t);
+            let oldDate = new Date();
+            oldDate.setMonth(oldDate.getMonth() - 3);
+            if (closeDate > oldDate) return true;
+          }
+          return false;
+        }
       })
       .map((itm)=>{
         let status = itm.gsx$status.$t;
-        if (status === 'On Hold') status = 'Ready';
+        if (status === 'Completed') status = 'Recently Closed';
         return {
           name: itm.gsx$name.$t,
           category: itm.gsx$sectioncolumn.$t,
