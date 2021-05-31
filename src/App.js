@@ -170,7 +170,7 @@ class App extends React.Component{
 
   prepData(rawData, laneDimension) {
     const lane_presets  = laneDimensions[laneDimension].presets;
-    const internalStackPresets = ['Next', 'In Progress', 'Parking Lot'];
+    const internalStackPresets = ['In Progress', 'Next', 'Parking Lot'];
     const externalStackPresets = ["Next", "In Progress", "Recently Closed"];
     const stack_presets = this.state.internalMode ? internalStackPresets : externalStackPresets;
     let data = [];
