@@ -13,7 +13,7 @@
   --coa-platinum: #E6E8E6;
 }
 
-body {
+#root {
   padding-bottom: 5rem;
 }
 
@@ -70,6 +70,7 @@ html {
 .card-header {
   position: relative;
   padding-right: 56px;
+  padding-left: 36px;
   text-align: left;
 }
 
@@ -104,6 +105,21 @@ button.coa-bg-header:hover {
   bottom: 0;
   color: rgba(0,0,0,.55);
   text-align: center;
+}
+
+.priority-icon {
+  width: 28px;
+  min-height: 100%;
+  position: absolute;
+  left: 0;
+  top: 16;
+  bottom: 0;
+  color: rgba(0,0,0,.55);
+  text-align: center;
+}
+
+.priority-icon i {
+  margin-top: 1.25rem;
 }
 
 .expand-collapse i {
