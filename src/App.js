@@ -62,7 +62,7 @@ class Card extends React.Component {
   render () {
     let cardDetailClass = 'm-3 text-break hide-me'
     // let asciiArrowClass = 'expand';
-    let priorityIcon = ''
+    let priorityBackgroundClass = 'priority-icon-bg '
 
     if (this.state.open) {
       cardDetailClass = 'm-3 text-break'
@@ -71,26 +71,26 @@ class Card extends React.Component {
 
     switch (this.state.priority) {
       case 'High':
-        priorityIcon = 'fas fa-exclamation'
+        priorityBackgroundClass += 'bg-danger'
         break
       case 'Medium':
-        priorityIcon = 'fas fa-thermometer-half'
+        priorityBackgroundClass += 'bg-warning'
         break
       case 'Low':
-        priorityIcon = 'fas fa-thermometer-empty'
+        priorityBackgroundClass += 'bg-info'
         break
       case 'Ongoing':
-        priorityIcon = 'fas fa-retweet'
+        priorityBackgroundClass += 'bg-light'
         break
       default:
-        priorityIcon = 'fas fa-ban'
+        priorityBackgroundClass += ''
     }
 
     if (this.state.name === 'Dummy') return (<div>&nbsp;</div>) // Empty column placeholder
     const card = (
       <div className='card my-3'>
         <button className='card-header coa-bg-header' onClick={this.handleCardOpen}>
-          <h4 className=' lighter'>{this.state.name}</h4> <span className='priority-icon'><i className={priorityIcon} /></span> <span className='expand-collapse'>{this.state.open ? (<i className='fas fa-folder-open' />) : (<i className='fas fa-folder' />)}</span>
+          <h4 className=' lighter'>{this.state.name}</h4> <span className='priority-text'>{this.state.priority !== 'None' ? this.state.priority : ''}</span> <span className={priorityBackgroundClass}></span> <span className='expand-collapse'>{this.state.open ? (<i className='fas fa-folder-open' />) : (<i className='fas fa-folder' />)}</span>
         </button>
         <div className={cardDetailClass}>
           <div style={{ marginBottom: '10px' }}>
