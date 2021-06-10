@@ -41,5 +41,26 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+
+    <script type="text/javascript">
+
+      // The below will watch the root element and report changes in height to a parent container (if one exists)
+      // Implemented to allow embedding this app in a dynamically-sized iframe
+
+      let rootElement= document.getElementById('root');
+
+      function outputSize() {
+        // console.log(`${rootElement.offsetWidth} - ${rootElement.offsetHeight}`);
+        if(window.parent.postMessage) {
+          let height= rootElement.offsetHeight;
+          window.parent.postMessage(height, '*');
+        }
+      }
+
+      outputSize();
+
+      new ResizeObserver(outputSize).observe(rootElement);
+
+    </script>
   </body>
 </html>

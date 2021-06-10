@@ -13,7 +13,7 @@
   --coa-platinum: #E6E8E6;
 }
 
-body {
+#root {
   padding-bottom: 5rem;
 }
 
@@ -70,7 +70,9 @@ html {
 .card-header {
   position: relative;
   padding-right: 56px;
+  padding-left: 1.75rem;
   text-align: left;
+  border: 1px solid var(--coa-blue-light);
 }
 
 .coa-bg-header {
@@ -89,6 +91,7 @@ button.coa-bg-header:hover {
   margin: .5rem 0;
   font-size: 1.1rem;
   font-weight: 300;
+  min-height: 50px;
 }
 
 .hide-me {
@@ -104,6 +107,37 @@ button.coa-bg-header:hover {
   bottom: 0;
   color: rgba(0,0,0,.55);
   text-align: center;
+}
+
+.priority-text {
+  width: 75px;
+  /* height works with left padding of the card-header */
+  /* text is rotated, so this height is how wide the priority banner will appear */
+  height: 1.25rem;
+  font-size: 0.75rem;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  color: rgba(0,0,0,.75);
+  text-align: center;
+  transform: rotate(-90deg);
+  transform-origin: 0.5rem 0.5rem;
+  /* want the text to appear above the background color */
+  z-index: 3;
+}
+
+.priority-icon-bg {
+  width: 1.25rem;
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  /* want the background color to appear between "default" layer and the foreground text */
+  z-index: 2;
+}
+
+.priority-icon i {
+  margin-top: 1.25rem;
 }
 
 .expand-collapse i {
