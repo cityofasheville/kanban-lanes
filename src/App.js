@@ -12,6 +12,9 @@ var laneDimensions = {
   },
   lead: {
     presets: ['Natalie Bailey', 'Cameron Henshaw', 'Eric Jackson']
+  },
+  none: {
+    presets: []
   }
 }
 
@@ -280,7 +283,8 @@ class App extends React.Component {
               priority: (itm.gsx$importance.$t === '') ? 'None' : itm.gsx$importance.$t,
               lead: (itm.gsx$assignee.$t === '') ? 'Unknown' : itm.gsx$assignee.$t,
               status: status,
-              description: itm.gsx$notes.$t
+              description: itm.gsx$notes.$t,
+              none: 'All Projects'
             }
           })
         const data = this.prepData(rawData, this.state.laneDimension)
@@ -340,6 +344,19 @@ class App extends React.Component {
                 className='form-check-input'
               />
               <b>Lead</b>
+            </label>
+          </div>
+          <div className='form-check form-check-inline'>
+            <label className='form-check-label'>
+              <input
+                type='radio'
+                name='react-tips'
+                value='none'
+                checked={this.state.laneDimension === 'none'}
+                onChange={this.handleViewByChange}
+                className='form-check-input'
+              />
+              <b>None</b>
             </label>
           </div>
         </form>
