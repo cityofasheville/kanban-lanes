@@ -254,6 +254,8 @@ class App extends React.Component {
       .then((jsonData) => {
         rawData = jsonData.feed.entry
           .filter((itm) => {
+            if (itm.gsx$status.$t === 'Cancelled') return false
+
             if (this.state.internalMode) {
               return (itm.gsx$parenttask.$t === '' &&
                       itm.gsx$completedat.$t === '')
