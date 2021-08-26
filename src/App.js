@@ -250,23 +250,31 @@ class App extends React.Component {
     // ID and URL the Google Spreadsheet. Make sure it is published
     var spreadsheetID = '1HMyHNExKF8xo8S6gXkqx5sTo4Rz0ez8iY4mF2XzmvXs'
     var url = 'https://spreadsheets.google.com/feeds/list/' + spreadsheetID + '/od6/public/values?alt=json'
+    url = `https://docs.google.com/spreadsheets/d/${spreadsheetID}/gviz/tq?tqx=out:json`
 
     let rawData = null
     fetch(url) /* global fetch:false */
-      .then(response => response.json())
-      .then((jsonData) => {
-        rawData = jsonData.feed.entry
+      .then(response => response.text())
+      .then((txtData) => {
+        const jsonData = JSON.parse(txtData.substr(47).slice(0, -2))
+        rawData = jsonData.table.rows
           .filter((itm) => {
-            if (itm.gsx$status.$t === 'Cancelled') return false
+            let status = ''
+            let parentTask = ''
+            let completedAt = ''
+            if (itm.c[15]) status = itm.c[15].v
+            if (itm.c[13]) parentTask = itm.c[13].v
+            if (itm.c[2]) completedAt = itm.c[2].f
 
+            if (status === 'Cancelled') return false
             if (this.state.internalMode) {
-              return (itm.gsx$parenttask.$t === '' &&
-                      itm.gsx$completedat.$t === '')
+              return (parentTask === '' &&
+                      completedAt === '')
             } else {
-              if (itm.gsx$status.$t === 'Parking Lot') return false
-              if (itm.gsx$parenttask.$t === '') {
-                if (itm.gsx$completedat.$t === '') return true
-                const closeDate = Date.parse(itm.gsx$completedat.$t)
+              if (status === 'Parking Lot') return false
+              if (parentTask === '') {
+                if (completedAt === '') return true
+                const closeDate = Date.parse(completedAt)
                 const oldDate = new Date()
                 oldDate.setMonth(oldDate.getMonth() - 3)
                 if (closeDate > oldDate) return true
@@ -274,18 +282,34 @@ class App extends React.Component {
               return false
             }
           })
+          /*
+            status: 15
+            Parent Task: 13
+            Completed At: 2
+            Name: 4
+            Section/Column: 5
+            Importance: 14
+            Assignee: 6
+            Notes: 11
+          */
           .map((itm) => {
-            let status = itm.gsx$status.$t
+            let status = itm.c[15] ? itm.c[15].v : ''
             if (status === 'Completed') status = 'Recently Closed'
-            return {
-              name: itm.gsx$name.$t,
-              category: itm.gsx$sectioncolumn.$t,
-              priority: (itm.gsx$importance.$t === '') ? 'None' : itm.gsx$importance.$t,
-              lead: (itm.gsx$assignee.$t === '') ? 'Unknown' : itm.gsx$assignee.$t,
-              status: status,
-              description: itm.gsx$notes.$t,
+            const name = (itm.c[4] ? itm.c[4].v : '')
+            const priority = (itm.c[14] ? itm.c[14].v : 'None')
+            const category = (itm.c[5] ? itm.c[5].v : '')
+            const lead = (itm.c[6] ? itm.c[6].v : 'Unknown')
+            const description = (itm.c[11] ? itm.c[11].v : '')
+            const nitm = {
+              name,
+              category,
+              priority,
+              lead,
+              status,
+              description,
               none: 'All Projects'
             }
+            return nitm
           })
         const data = this.prepData(rawData, this.state.laneDimension)
 
